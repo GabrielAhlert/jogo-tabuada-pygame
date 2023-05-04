@@ -4,7 +4,7 @@ WHITE = (255, 255, 255)
 class Barrier(pygame.sprite.Sprite):
     #This class represents a Barrier. It derives from the "Sprite" class in Pygame.
  
-    def __init__(self, color, width, height, speed, number):
+    def __init__(self, color, width, height, starty=0):
         # Call the parent class (Sprite) constructor
         super().__init__()
  
@@ -18,7 +18,7 @@ class Barrier(pygame.sprite.Sprite):
         self.width=width
         self.height=height
         self.color = color
-        self.speed = speed
+        self.y = starty
  
         # Draw the Barrier (a rectangle!)
         pygame.draw.rect(self.image, self.color, [0, 0, self.width, self.height])
@@ -51,13 +51,13 @@ class Barrier(pygame.sprite.Sprite):
         self.rect.x -= pixels
  
     def moveForward(self, speed):
-        self.rect.y += self.speed * speed / 20
+        self.y += speed
+        self.rect.y = self.y
  
     def moveBackward(self, speed):
-        self.rect.y -= self.speed * speed / 20
+        self.y -= speed
+        self.rect.y = self.y
  
-    def changeSpeed(self, speed):
-        self.speed = speed
  
     def repaint(self, color):
         self.color = color
