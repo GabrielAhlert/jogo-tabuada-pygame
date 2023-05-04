@@ -40,7 +40,8 @@ class Barrier(pygame.sprite.Sprite):
         textRect.center = (self.width // 2, self.height // 2)
         self.image.blit(text, textRect)
 
-
+    def getNumber(self):
+        return self.number
 
  
     def moveRight(self, pixels):

@@ -8,13 +8,17 @@ pygame.init()
 GREEN = (20, 255, 140)
 GREY = (210, 210 ,210)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+RED = (255, 100, 100)
+DARKRED = (255, 0, 0)
 PURPLE = (255, 0, 255)
 YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 BLUE = (100, 100, 255)
+DARKBLUE = (0, 0, 255)
 
 speed = 1
+barrierSpeed = 20
+posibleRange = (1,5)
 colorList = (RED, GREEN, PURPLE, YELLOW, CYAN, BLUE)
 
 
@@ -29,43 +33,43 @@ pygame.display.set_caption("Player Racing")
 all_sprites_list = pygame.sprite.Group()
 
 
-playerPlayer1 = Player(BLUE, 60, 80, 70)
+playerPlayer1 = Player(DARKBLUE, 60, 80, 70)
 playerPlayer1.rect.x = 130
 playerPlayer1.rect.y = SCREENHEIGHT - 100
 
-playerPlayer2 = Player(RED, 60, 80, 70)
+playerPlayer2 = Player(DARKRED, 60, 80, 70)
 playerPlayer2.rect.x = 530
 playerPlayer2.rect.y = SCREENHEIGHT - 100
 
-Barrier1 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier1 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier1.rect.x = 50
 Barrier1.rect.y = -100
 
-Barrier2 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier2 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier2.rect.x = 130
 Barrier2.rect.y = -100
 
-Barrier3 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier3 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier3.rect.x = 210
 Barrier3.rect.y = -100
 
-Barrier4 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier4 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier4.rect.x = 290
 Barrier4.rect.y = -100
 
-Barrier5 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier5 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier5.rect.x = 450
 Barrier5.rect.y = -100
 
-Barrier6 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier6 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier6.rect.x = 530
 Barrier6.rect.y = -100
 
-Barrier7 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier7 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier7.rect.x = 610
 Barrier7.rect.y = -100
 
-Barrier8 = Barrier(random.choice(colorList), 60, 80, 50,1)
+Barrier8 = Barrier(random.choice(colorList), 60, 80, barrierSpeed, 1)
 Barrier8.rect.x = 690
 Barrier8.rect.y = -100
 
@@ -94,11 +98,20 @@ all_coming_BarriersRight.add(Barrier6)
 all_coming_BarriersRight.add(Barrier7)
 all_coming_BarriersRight.add(Barrier8)
 
+numbersLeft = []
+numbersRight = []
+
 for Barrier in all_coming_BarriersLeft:
-    Barrier.setNumber(random.randint(1,100))
+    number = random.randint(posibleRange[0],posibleRange[1])
+    Barrier.setNumber(number)
+    numbersLeft.append(number)
 
 for Barrier in all_coming_BarriersRight:
-    Barrier.setNumber(random.randint(1,100))
+    number = random.randint(posibleRange[0],posibleRange[1])
+    Barrier.setNumber(number)
+    numbersRight.append(number)
+
+anwser = random.choice(numbersLeft) * random.choice(numbersRight)
 
 
 #Allowing the user to close the window...
@@ -119,24 +132,51 @@ while PlayerryOn:
                 elif event.key==pygame.K_RIGHT:
                     playerPlayer2.moveRight(80)
 
-
-        #Game Logic
         for Barrier in all_coming_BarriersLeft:
             Barrier.moveForward(speed)
             if Barrier.rect.y > SCREENHEIGHT:
-                #Barrier.changeSpeed(random.randint(50,100))
-                Barrier.repaint(random.choice(colorList))
-                Barrier.rect.y = -200
-                Barrier.setNumber(random.randint(1,100))
+                numbersLeft = []
+                for barrier in all_coming_BarriersLeft:
+                    number = random.randint(posibleRange[0],posibleRange[1])
+                    numbersLeft.append(number)
+                    barrier.repaint(random.choice(colorList))
+                    barrier.rect.y = -200
+                    barrier.setNumber(number)
+                numbersRight = []
+                for barrier in all_coming_BarriersRight:
+                    number = random.randint(posibleRange[0],posibleRange[1])
+                    numbersRight.append(number)
+                    barrier.repaint(random.choice(colorList))
+                    barrier.rect.y = -200
+                    barrier.setNumber(number)
+                numberleft = random.choice(numbersLeft)
+                numberright = random.choice(numbersRight)
+                anwser = numberleft * numberright
+                print("anwser: " + str(anwser))
+                print("left: " + str(numberleft))
+                print("right: " + str(numberright))
 
-
+        
         for Barrier in all_coming_BarriersRight:
             Barrier.moveForward(speed)
-            if Barrier.rect.y > SCREENHEIGHT:
-                #Barrier.changeSpeed(random.randint(50,100))
-                Barrier.repaint(random.choice(colorList))
-                Barrier.rect.y = -200
-                Barrier.setNumber(random.randint(1,100))
+            
+        # #Game Logic
+        # for Barrier in all_coming_BarriersLeft:
+        #     Barrier.moveForward(speed)
+        #     if Barrier.rect.y > SCREENHEIGHT:
+        #         #Barrier.changeSpeed(random.randint(barrierSpeed, 100))
+        #         Barrier.repaint(random.choice(colorList))
+        #         Barrier.rect.y = -200
+        #         Barrier.setNumber(random.randint(1,10))
+
+
+        # for Barrier in all_coming_BarriersRight:
+        #     Barrier.moveForward(speed)
+        #     if Barrier.rect.y > SCREENHEIGHT:
+        #         #Barrier.changeSpeed(random.randint(barrierSpeed, 100))
+        #         Barrier.repaint(random.choice(colorList))
+        #         Barrier.rect.y = -200
+        #         Barrier.setNumber(random.randint(1,10))
 
         all_sprites_list.update()
 
@@ -164,8 +204,21 @@ while PlayerryOn:
         #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
         all_sprites_list.draw(screen)
 
-
+        # Draw the score and top score  
         pygame.draw.rect(screen, (0,0,0), [0,0, SCREENWIDTH,80])
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        text = font.render("Score: " + str(10),True,WHITE)
+        screen.blit(text, [20, 10])
+        text = font.render("Top Score: " + str(10),True,WHITE)
+        screen.blit(text, [20, 40])
+
+        
+        # Draw Rules to win match
+        font = pygame.font.SysFont('Calibri', 40, True, False)
+        text = font.render("       X        = " + str(anwser),True,WHITE)
+        screen.blit(text, (288, 20))
+        pygame.draw.rect(screen, DARKBLUE, [300,20, 40,40])
+        pygame.draw.rect(screen, DARKRED, [380,20, 40,40])
 
         #Refresh Screen
         pygame.display.flip()
