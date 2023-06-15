@@ -2,6 +2,7 @@ import pygame, random, time
 #Let's import the Player Class
 from player import Player
 from barrier import Barrier
+from grass import Grass
 
 pygame.init()
 
@@ -15,6 +16,7 @@ YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 BLUE = (100, 100, 255)
 DARKBLUE = (0, 0, 255)
+DARKGREEN = (72,93,20)
 
 speed = 2
 posibleRange = (1,10)
@@ -25,7 +27,7 @@ SCREENWIDTH=800
 SCREENHEIGHT=600
 
 size = (SCREENWIDTH, SCREENHEIGHT)
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 pygame.display.set_caption("Tabuada")
 
 #This will be a list that will contain all the sprites we intend to use in our game.
@@ -40,37 +42,37 @@ playerPlayer2 = Player(DARKRED, 60, 80, 70)
 playerPlayer2.rect.x = 530
 playerPlayer2.rect.y = SCREENHEIGHT - 100
 
-Barrier1 = Barrier(random.choice(colorList), 60, 80)
+Barrier1 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier1.rect.x = 50
-Barrier1.rect.y = 200.0
 
-Barrier2 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier2 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier2.rect.x = 130
-Barrier2.rect.y = 0.0
 
-Barrier3 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier3 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier3.rect.x = 210
-Barrier3.rect.y = 0
 
-Barrier4 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier4 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier4.rect.x = 290
-Barrier4.rect.y = 0
 
-Barrier5 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier5 = Barrier(random.choice(colorList), 60, 80, -200 )
 Barrier5.rect.x = 450
-Barrier5.rect.y = 0
 
-Barrier6 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier6 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier6.rect.x = 530
-Barrier6.rect.y = 0
 
-Barrier7 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier7 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier7.rect.x = 610
-Barrier7.rect.y = 0
 
-Barrier8 = Barrier(random.choice(colorList), 60, 80)
+
+Barrier8 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier8.rect.x = 690
-Barrier8.rect.y = 0
+
 
 
 # Add the Player to the list of objects
@@ -119,11 +121,27 @@ PlayerryOn = True
 clock=pygame.time.Clock()
 starttime = time.time() + 300.00
 
+
+grasses = pygame.sprite.Group()
+for i in range(0,SCREENHEIGHT,50):
+    grasses.add(Grass(i, -20, SCREENWIDTH, SCREENHEIGHT))
+    grasses.add(Grass(i, 340, SCREENWIDTH, SCREENHEIGHT))
+    grasses.add(Grass(i, 380, SCREENWIDTH, SCREENHEIGHT))
+    grasses.add(Grass(i, 740, SCREENWIDTH, SCREENHEIGHT))
+    
+
+
+
+
+
+
 while PlayerryOn:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 PlayerryOn=False
             elif event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_ESCAPE:
+                    PlayerryOn=False
                 if event.key==pygame.K_d:
                     if playerPlayer1.rect.x < 290:
                         playerPlayer1.moveRight(80)
@@ -153,7 +171,7 @@ while PlayerryOn:
                 print("CORRECT")
             else:
                 print("WRONG")
-                if speed > 0.2:
+                if speed > 0.3:
                     speed -= 0.2
                 else:
                     speed = 0.2
@@ -201,8 +219,9 @@ while PlayerryOn:
         timeleftSec = int((starttime - time.time())%60)
 
         #Drawing on Screen
-        screen.fill(GREEN)
+        screen.fill(DARKGREEN)
 
+        
         #Draw The Road
         pygame.draw.rect(screen, GREY, [40,0, 320,SCREENHEIGHT])
         #Draw Line painting on the road
@@ -223,6 +242,9 @@ while PlayerryOn:
 
         #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
         all_sprites_list.draw(screen)
+        
+        for grass in grasses:
+            grass.updateAndDraw(screen, speed)
 
         # Draw the score and top score  
         pygame.draw.rect(screen, (0,0,0), [0,0, SCREENWIDTH,80])
@@ -244,6 +266,7 @@ while PlayerryOn:
         screen.blit(text, (288, 20))
         pygame.draw.rect(screen, DARKBLUE, [300,20, 40,40])
         pygame.draw.rect(screen, DARKRED, [380,20, 40,40])
+
 
         #Refresh Screen
         pygame.display.flip()
