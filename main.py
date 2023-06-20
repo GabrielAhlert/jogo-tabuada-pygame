@@ -3,6 +3,7 @@ import pygame, random, time
 from player import Player
 from barrier import Barrier
 from grass import Grass
+from pygame import mixer
 
 pygame.init()
 
@@ -120,6 +121,10 @@ anwser = random.choice(numbersLeft) * random.choice(numbersRight)
 PlayerryOn = True
 clock=pygame.time.Clock()
 starttime = time.time() + 300.00
+mixer.init() 
+mixer.music.load("ambient.mp3") 
+mixer.music.set_volume(0.7) 
+mixer.music.play() 
 
 
 grasses = pygame.sprite.Group()
