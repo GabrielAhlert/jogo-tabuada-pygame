@@ -27,18 +27,18 @@ SCREENWIDTH=800
 SCREENHEIGHT=600
 
 size = (SCREENWIDTH, SCREENHEIGHT)
-screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN|pygame.SCALED)
 pygame.display.set_caption("Tabuada")
 
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
 
 
-playerPlayer1 = Player(DARKBLUE, 60, 80, 70)
+playerPlayer1 = Player(DARKBLUE, 60, 80, 70, "girl.png")
 playerPlayer1.rect.x = 130
 playerPlayer1.rect.y = SCREENHEIGHT - 100
 
-playerPlayer2 = Player(DARKRED, 60, 80, 70)
+playerPlayer2 = Player(DARKRED, 60, 80, 70, "boy.png")
 playerPlayer2.rect.x = 530
 playerPlayer2.rect.y = SCREENHEIGHT - 100
 
