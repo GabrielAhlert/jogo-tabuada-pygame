@@ -4,6 +4,19 @@ from player import Player
 from barrier import Barrier
 from grass import Grass
 from pygame import mixer
+import requests, json
+
+try: 
+    response = requests.get("https://649204ac2f2c7ee6c2c94ef8.mockapi.io/topScore")
+    print(response)
+    response_info = json.loads(response.text)
+    print(response_info)
+    topScores = []
+    for i in response_info:
+        topScores.append((i["name"],i["score"]))
+except:
+    print("Erro ao conectar com o servidor")
+    topScores = [('Gabriel',600), ('Gabriel',500), ('Gabriel',400)]
 
 pygame.init()
 
@@ -23,7 +36,6 @@ speed = 2
 posibleRange = (1,10)
 colorList = (RED, GREEN, PURPLE, YELLOW, CYAN, BLUE)
 
-topScores = [('Gabriel',600), ('Gabriel',500), ('Gabriel',400), ('Gabriel',300), ('Gabriel',200), ('Gabriel',100), ('Gabriel',50), ('Gabriel',10), ('Gabriel',5), ('Gabriel',1)]
 
 
 SCREENWIDTH=800
@@ -223,10 +235,6 @@ while PlayerryOn:
             anwser = numberleft * numberright
     
         
-        print (speed)
-        print (tutorialTime)
-        print (time.time())
-
         all_sprites_list.update()
         timeleftMin = int((starttime - time.time())/60)
         timeleftSec = int((starttime - time.time())%60)
@@ -291,6 +299,20 @@ while PlayerryOn:
 
         #Draw Game Over
         if timeleftMin <= 0 and timeleftSec <= 0:
+            newScore = {"name": name.replace('\r','') ,"score": score}
+            try:
+                requests.post("https://649204ac2f2c7ee6c2c94ef8.mockapi.io/topScore", data = newScore)
+                response = requests.get("https://649204ac2f2c7ee6c2c94ef8.mockapi.io/topScore")
+                print(response)
+                response_info = json.loads(response.text)
+                print(response_info)
+                topScores = []
+                for i in response_info:
+                    topScores.append((i["name"],i["score"]))
+            except:
+                print("Error to save score")
+                topScores.append((name, score))
+
             pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
             font = pygame.font.SysFont('Calibri', 60, True, False)
             text = font.render("Game Over",True,WHITE)
@@ -303,10 +325,14 @@ while PlayerryOn:
             screen.blit(text, (250, 280))
             pygame.display.flip()
             for i in range(0,3):
-                font = pygame.font.SysFont('Calibri', 40, True, False)
-                text = font.render(str(i+1) + " - " + str(threeBiggestScores[i]),True,WHITE)
-                screen.blit(text, (250, 350 + i*50))
-                pygame.display.flip()
+                try:
+                    font = pygame.font.SysFont('Calibri', 30, True, False)
+                    text = font.render(str(i+1) + " - " + str(threeBiggestScores[i][0]+' - '+threeBiggestScores[i][1]),True,WHITE)
+                    screen.blit(text, (250, 350 + i*50))
+                except:
+                    print("Error to show all top scores")
+            
+            pygame.display.flip()
             #Draw press any key to restart
             font = pygame.font.SysFont('Calibri', 40, True, False)
             text = font.render("Press any key to restart",True,WHITE)
@@ -455,17 +481,20 @@ while PlayerryOn:
                         if event.key == pygame.K_RETURN:
                             tutorial = 0
                             speed = 1.6
-                            starttime = time.time() + 300
+                            starttime = time.time() + 1
                         if event.key == pygame.K_BACKSPACE:
                             if name != "":
                                 name = name[:-1]
                         else:
                             name += event.unicode
 
-                if name != "":
-                    font = pygame.font.SysFont('Calibri', 30, True, False)
-                    text = font.render(name,True,WHITE)
-                    screen.blit(text, (220, 300))
+                try:
+                    if name != "":
+                        font = pygame.font.SysFont('Calibri', 30, True, False)
+                        text = font.render(name,True,WHITE)
+                        screen.blit(text, (220, 300))
+                except:
+                    pass
 
                 font = pygame.font.SysFont('Calibri', 30, True, False)
                 text = font.render("Quando estiver pronto",True,WHITE)
