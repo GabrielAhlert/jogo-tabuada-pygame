@@ -23,12 +23,15 @@ speed = 2
 posibleRange = (1,10)
 colorList = (RED, GREEN, PURPLE, YELLOW, CYAN, BLUE)
 
+topScores = [('Gabriel',600), ('Gabriel',500), ('Gabriel',400), ('Gabriel',300), ('Gabriel',200), ('Gabriel',100), ('Gabriel',50), ('Gabriel',10), ('Gabriel',5), ('Gabriel',1)]
+
 
 SCREENWIDTH=800
 SCREENHEIGHT=600
 
 size = (SCREENWIDTH, SCREENHEIGHT)
-screen = pygame.display.set_mode(size, pygame.FULLSCREEN|pygame.SCALED)
+# screen = pygame.display.set_mode(size, pygame.FULLSCREEN|pygame.SCALED)
+screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Tabuada")
 
 #This will be a list that will contain all the sprites we intend to use in our game.
@@ -59,7 +62,7 @@ Barrier4 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier4.rect.x = 290
 
 
-Barrier5 = Barrier(random.choice(colorList), 60, 80, -200 )
+Barrier5 = Barrier(random.choice(colorList), 60, 80, -200)
 Barrier5.rect.x = 450
 
 
@@ -103,6 +106,12 @@ all_coming_BarriersRight.add(Barrier8)
 numbersLeft = []
 numbersRight = []
 score=0
+redbar = 0
+greenbar = 0
+barcolor = (0,0,0)
+tutorial = 1
+spacePressed = False
+name = ""
 
 for Barrier in all_coming_BarriersLeft:
     number = random.randint(posibleRange[0],posibleRange[1])
@@ -120,11 +129,12 @@ anwser = random.choice(numbersLeft) * random.choice(numbersRight)
 #Allowing the user to close the window...
 PlayerryOn = True
 clock=pygame.time.Clock()
-starttime = time.time() + 300.00
+starttime = time.time() + 300.0
+tutorialTime = time.time() + 5
 mixer.init() 
 mixer.music.load("ambient.mp3") 
 mixer.music.set_volume(0.7) 
-mixer.music.play() 
+mixer.music.play(loops = -1) 
 
 
 grasses = pygame.sprite.Group()
@@ -135,11 +145,19 @@ for i in range(0,SCREENHEIGHT,50):
     grasses.add(Grass(i, 740, SCREENWIDTH, SCREENHEIGHT))
     
 
-
-
-
-
-
+def wait():
+    while True:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+            elif event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_ESCAPE:
+                    pygame.quit()
+                else:
+                    return
+        pygame.time.wait(20)
+    
+        
 while PlayerryOn:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -159,6 +177,8 @@ while PlayerryOn:
                 elif event.key==pygame.K_RIGHT:
                     if playerPlayer2.rect.x < 690:
                         playerPlayer2.moveRight(80)
+                elif event.key==pygame.K_SPACE:
+                    spacePressed = True
 
         for Barrier in all_coming_BarriersLeft:
             Barrier.moveForward(speed)
@@ -174,6 +194,7 @@ while PlayerryOn:
                 score += 1
                 speed += 0.1
                 print("CORRECT")
+                greenbar = 120
             else:
                 print("WRONG")
                 if speed > 0.3:
@@ -181,6 +202,7 @@ while PlayerryOn:
                 else:
                     speed = 0.2
                 print("speed: " + str(speed))
+                redbar = 120
             print(collisionsP1*collisionsP2)
             numbersLeft = []
             for barrier in all_coming_BarriersLeft:
@@ -200,24 +222,10 @@ while PlayerryOn:
             numberright = random.choice(numbersRight)
             anwser = numberleft * numberright
     
-            
-        # #Game Logic
-        # for Barrier in all_coming_BarriersLeft:
-        #     Barrier.moveForward(speed)
-        #     if Barrier.rect.y > SCREENHEIGHT:
-        #         #Barrier.changeSpeed(random.randint(barrierSpeed, 100))
-        #         Barrier.repaint(random.choice(colorList))
-        #         Barrier.rect.y = -200
-        #         Barrier.setNumber(random.randint(1,10))
-
-
-        # for Barrier in all_coming_BarriersRight:
-        #     Barrier.moveForward(speed)
-        #     if Barrier.rect.y > SCREENHEIGHT:
-        #         #Barrier.changeSpeed(random.randint(barrierSpeed, 100))
-        #         Barrier.repaint(random.choice(colorList))
-        #         Barrier.rect.y = -200
-        #         Barrier.setNumber(random.randint(1,10))
+        
+        print (speed)
+        print (tutorialTime)
+        print (time.time())
 
         all_sprites_list.update()
         timeleftMin = int((starttime - time.time())/60)
@@ -251,8 +259,17 @@ while PlayerryOn:
         for grass in grasses:
             grass.updateAndDraw(screen, speed)
 
-        # Draw the score and top score  
-        pygame.draw.rect(screen, (0,0,0), [0,0, SCREENWIDTH,80])
+        # Draw the score and top score
+        if redbar > 0:
+            barcolor = (155,0,0)
+            redbar -= 1
+        elif greenbar > 0:
+            barcolor = (0,155,0)
+            greenbar -= 1
+        else:
+            barcolor = (0,0,0)
+
+        pygame.draw.rect(screen, barcolor, [0,0, SCREENWIDTH,80])
         font = pygame.font.SysFont('Calibri', 25, True, False)
         text = font.render("Score: " + str(score),True,WHITE)
         screen.blit(text, [20, 10])
@@ -271,6 +288,199 @@ while PlayerryOn:
         screen.blit(text, (288, 20))
         pygame.draw.rect(screen, DARKBLUE, [300,20, 40,40])
         pygame.draw.rect(screen, DARKRED, [380,20, 40,40])
+
+        #Draw Game Over
+        if timeleftMin <= 0 and timeleftSec <= 0:
+            pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
+            font = pygame.font.SysFont('Calibri', 60, True, False)
+            text = font.render("Game Over",True,WHITE)
+            screen.blit(text, (250, 200))
+            pygame.display.flip()
+            #Draw Bigest Scores
+            threeBiggestScores = sorted(topScores, reverse=True)[:3]
+            font = pygame.font.SysFont('Calibri', 40, True, False)
+            text = font.render("Top Scores:",True,WHITE)
+            screen.blit(text, (250, 280))
+            pygame.display.flip()
+            for i in range(0,3):
+                font = pygame.font.SysFont('Calibri', 40, True, False)
+                text = font.render(str(i+1) + " - " + str(threeBiggestScores[i]),True,WHITE)
+                screen.blit(text, (250, 350 + i*50))
+                pygame.display.flip()
+            #Draw press any key to restart
+            font = pygame.font.SysFont('Calibri', 40, True, False)
+            text = font.render("Press any key to restart",True,WHITE)
+            screen.blit(text, (205, 500))
+            pygame.display.flip()
+            #Wait for any key to be pressed
+            wait()
+            #Draw restart
+            pygame.draw.rect(screen, (0,0,200), [200,200, SCREENWIDTH-400,SCREENHEIGHT-540])
+            font = pygame.font.SysFont('Calibri', 60, True, False)
+            text = font.render("Restarting",True,WHITE)
+            screen.blit(text, (250, 200))
+            pygame.display.flip()
+            pygame.time.wait(1000)
+            #Reset variables
+            score = 0
+            speed = 2
+            redbar = 0
+            greenbar = 0
+            starttime = time.time() + 15.00
+
+            numbersLeft = []
+            for barrier in all_coming_BarriersLeft:
+                number = random.randint(posibleRange[0],posibleRange[1])
+                numbersLeft.append(number)
+                barrier.repaint(random.choice(colorList))
+                barrier.y = -200
+                barrier.setNumber(number)
+            numbersRight = []
+            for barrier in all_coming_BarriersRight:
+                number = random.randint(posibleRange[0],posibleRange[1])
+                numbersRight.append(number)
+                barrier.repaint(random.choice(colorList))
+                barrier.y = -200
+                barrier.setNumber(number)
+            numberleft = random.choice(numbersLeft)
+            numberright = random.choice(numbersRight)
+            anwser = numberleft * numberright
+
+
+        if tutorial == 1:
+            speed = 1
+            tutorial = 2
+            if(time.time() > tutorialTime):
+                tutorial = 2
+        if tutorial == 2:
+            speed = 0
+            #draw tutorial
+            pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
+            font = pygame.font.SysFont('Calibri', 60, True, False)
+            text = font.render("Tutorial",True,WHITE)
+            screen.blit(text, (300, 200))
+
+            font = pygame.font.SysFont('Calibri', 40, True, False)
+            text = font.render("Mova o Bonecos Azul",True,WHITE)
+            screen.blit(text, (205, 300))
+
+            font = pygame.font.SysFont('Calibri', 40, True, False)
+            text = font.render("pelas teclas 'a' e 'd' ",True,WHITE)
+            screen.blit(text, (205, 350))
+
+            font = pygame.font.SysFont('Calibri', 40, True, False)
+            text = font.render("e Vermelho pelas setas",True,WHITE)
+            screen.blit(text, (205, 400))
+
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            screen.blit(text, (205, 500))
+            if spacePressed:
+                tutorial += 1
+                spacePressed = False
+        
+        if tutorial == 3:
+            pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
+            font = pygame.font.SysFont('Calibri', 60, True, False)
+            text = font.render("Tutorial",True,WHITE)
+            screen.blit(text, (300, 200))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Seu objetivo é juntar 2",True,WHITE)
+            screen.blit(text, (205, 300))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("barreiras (esq e dir) de modo",True,WHITE)
+            screen.blit(text, (205, 350))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("que multiplicadas resultem",True,WHITE)
+            screen.blit(text, (205, 400))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("no numero correto",True,WHITE)
+            screen.blit(text, (205, 450))
+            if spacePressed:
+                tutorial += 1
+                spacePressed = False
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            screen.blit(text, (205, 500))
+        
+        if tutorial == 4:
+            pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
+            font = pygame.font.SysFont('Calibri', 60, True, False)
+            text = font.render("Tutorial",True,WHITE)
+            screen.blit(text, (300, 200))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Voces tem 5 Minutos para fazer",True,WHITE)
+            screen.blit(text, (205, 300))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("a maior pontuação possível",True,WHITE)
+            screen.blit(text, (205, 350))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Obs. Os melhores da sala vão",True,RED)
+            screen.blit(text, (205, 400))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("aparecer no jogo dos colegas",True,RED)
+            screen.blit(text, (205, 450))
+
+            font = pygame.font.SysFont('Calibri', 30, True, False)
+            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            screen.blit(text, (205, 500))
+
+            if spacePressed:
+                tutorial += 1
+                spacePressed = False
+
+        if tutorial == 5:
+            while True:
+                pygame.draw.rect(screen, (0,0,0), [200,200, SCREENWIDTH-400,SCREENHEIGHT-250])
+                font = pygame.font.SysFont('Calibri', 50, True, False)
+                text = font.render("Digite seu nome",True,WHITE)
+                screen.blit(text, (220, 200))
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            pygame.quit()
+                        if event.key == pygame.K_RETURN:
+                            tutorial = 0
+                            speed = 1.6
+                            starttime = time.time() + 300
+                        if event.key == pygame.K_BACKSPACE:
+                            if name != "":
+                                name = name[:-1]
+                        else:
+                            name += event.unicode
+
+                if name != "":
+                    font = pygame.font.SysFont('Calibri', 30, True, False)
+                    text = font.render(name,True,WHITE)
+                    screen.blit(text, (220, 300))
+
+                font = pygame.font.SysFont('Calibri', 30, True, False)
+                text = font.render("Quando estiver pronto",True,WHITE)
+                screen.blit(text, (205, 460))
+
+                font = pygame.font.SysFont('Calibri', 30, True, False)
+                text = font.render("Pressione Enter para Continuar",True,WHITE)
+                screen.blit(text, (205, 500))
+
+                pygame.display.flip()
+                if tutorial == 0:
+                    break
+
+
+        
 
 
         #Refresh Screen
