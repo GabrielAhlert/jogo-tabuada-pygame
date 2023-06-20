@@ -16,7 +16,7 @@ try:
         topScores.append((i["name"],i["score"]))
 except:
     print("Erro ao conectar com o servidor")
-    topScores = [('Gabriel',600), ('Gabriel',500), ('Gabriel',400)]
+    topScores = []
 
 pygame.init()
 
@@ -481,7 +481,7 @@ while PlayerryOn:
                         if event.key == pygame.K_RETURN:
                             tutorial = 0
                             speed = 1.6
-                            starttime = time.time() + 1
+                            starttime = time.time() + 300
                         if event.key == pygame.K_BACKSPACE:
                             if name != "":
                                 name = name[:-1]
@@ -507,10 +507,6 @@ while PlayerryOn:
                 pygame.display.flip()
                 if tutorial == 0:
                     break
-
-
-        
-
 
         #Refresh Screen
         pygame.display.flip()
