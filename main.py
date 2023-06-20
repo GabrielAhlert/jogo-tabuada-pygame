@@ -42,8 +42,8 @@ SCREENWIDTH=800
 SCREENHEIGHT=600
 
 size = (SCREENWIDTH, SCREENHEIGHT)
-# screen = pygame.display.set_mode(size, pygame.FULLSCREEN|pygame.SCALED)
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN|pygame.SCALED)
+# screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Tabuada")
 
 #This will be a list that will contain all the sprites we intend to use in our game.
@@ -141,7 +141,7 @@ anwser = random.choice(numbersLeft) * random.choice(numbersRight)
 #Allowing the user to close the window...
 PlayerryOn = True
 clock=pygame.time.Clock()
-starttime = time.time() + 300.0
+starttime = time.time() + 300
 tutorialTime = time.time() + 5
 mixer.init() 
 mixer.music.load("ambient.mp3") 
@@ -352,7 +352,7 @@ while PlayerryOn:
             speed = 2
             redbar = 0
             greenbar = 0
-            starttime = time.time() + 15.00
+            starttime = time.time() + 120
 
             numbersLeft = []
             for barrier in all_coming_BarriersLeft:
@@ -375,7 +375,6 @@ while PlayerryOn:
 
         if tutorial == 1:
             speed = 1
-            tutorial = 2
             if(time.time() > tutorialTime):
                 tutorial = 2
         if tutorial == 2:
@@ -399,8 +398,8 @@ while PlayerryOn:
             screen.blit(text, (205, 400))
 
 
-            font = pygame.font.SysFont('Calibri', 30, True, False)
-            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            font = pygame.font.SysFont('Calibri', 28, True, False)
+            text = font.render("Pressione espaço para Continuar",True,WHITE)
             screen.blit(text, (205, 500))
             if spacePressed:
                 tutorial += 1
@@ -425,14 +424,14 @@ while PlayerryOn:
             screen.blit(text, (205, 400))
 
             font = pygame.font.SysFont('Calibri', 30, True, False)
-            text = font.render("no numero correto",True,WHITE)
+            text = font.render("no número correto",True,WHITE)
             screen.blit(text, (205, 450))
             if spacePressed:
                 tutorial += 1
                 spacePressed = False
 
-            font = pygame.font.SysFont('Calibri', 30, True, False)
-            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            font = pygame.font.SysFont('Calibri', 28, True, False)
+            text = font.render("Pressione espaço para Continuar",True,WHITE)
             screen.blit(text, (205, 500))
         
         if tutorial == 4:
@@ -442,7 +441,7 @@ while PlayerryOn:
             screen.blit(text, (300, 200))
 
             font = pygame.font.SysFont('Calibri', 30, True, False)
-            text = font.render("Voces tem 5 Minutos para fazer",True,WHITE)
+            text = font.render("Voces tem 2 Minutos para fazer",True,WHITE)
             screen.blit(text, (205, 300))
 
             font = pygame.font.SysFont('Calibri', 30, True, False)
@@ -457,8 +456,8 @@ while PlayerryOn:
             text = font.render("aparecer no jogo dos colegas",True,RED)
             screen.blit(text, (205, 450))
 
-            font = pygame.font.SysFont('Calibri', 30, True, False)
-            text = font.render("Pressione spaço para Continuar",True,WHITE)
+            font = pygame.font.SysFont('Calibri', 28, True, False)
+            text = font.render("Pressione espaço para Continuar",True,WHITE)
             screen.blit(text, (205, 500))
 
             if spacePressed:
@@ -480,8 +479,8 @@ while PlayerryOn:
                             pygame.quit()
                         if event.key == pygame.K_RETURN:
                             tutorial = 0
-                            speed = 1.6
-                            starttime = time.time() + 300
+                            speed = 1.0
+                            starttime = time.time() + 120
                         if event.key == pygame.K_BACKSPACE:
                             if name != "":
                                 name = name[:-1]
